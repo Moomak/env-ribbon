@@ -11,7 +11,7 @@ import Combine
 import SystemConfiguration
 
 class IPMonitor: ObservableObject {
-    @Published var currentIP: String = "กำลังตรวจสอบ..."
+    @Published var currentIP: String = "Checking..."
     @Published var isMonitoring: Bool = false
     
     private var timer: Timer?
@@ -70,7 +70,7 @@ class IPMonitor: ObservableObject {
                 }
             } else {
                 DispatchQueue.main.async {
-                    self.currentIP = "ไม่พบการเชื่อมต่อ"
+                    self.currentIP = "No Connection"
                 }
             }
         }
@@ -97,7 +97,7 @@ class IPMonitor: ObservableObject {
         // ถ้าใช้ API ทั้งหมดแล้วยังไม่ได้ ให้แสดง error
         guard currentAPIIndex < ipAPIs.count else {
             DispatchQueue.main.async {
-                self.currentIP = "ไม่สามารถตรวจสอบได้"
+                self.currentIP = "Unable to check"
             }
             return
         }

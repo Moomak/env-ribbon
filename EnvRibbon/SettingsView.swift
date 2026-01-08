@@ -15,7 +15,7 @@ struct SettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // ส่วนหัว
-                Text("การตั้งค่า EnvRibbon")
+                Text("EnvRibbon Settings")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.bottom, 10)
@@ -23,7 +23,7 @@ struct SettingsView: View {
                 // IP Configurations
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
-                        Text("IP Addresses ที่ต้องการตรวจสอบ")
+                        Text("Target IP Addresses")
                             .font(.headline)
                         Spacer()
                         Button(action: {
@@ -34,10 +34,10 @@ struct SettingsView: View {
                                 .foregroundColor(.blue)
                         }
                         .buttonStyle(.plain)
-                        .help("เพิ่ม IP ใหม่")
+                        .help("Add New IP")
                     }
                     
-                    Text("เมื่อ IP ปัจจุบันตรงกับ IP ที่ตั้งค่า จะแสดง ribbon")
+                    Text("Ribbon displays when current IP matches configured IP.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -57,13 +57,13 @@ struct SettingsView: View {
                             Image(systemName: "network")
                                 .font(.system(size: 40))
                                 .foregroundColor(.secondary)
-                            Text("ยังไม่มี IP ที่ตั้งค่า")
+                            Text("No Configured IPs")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                             Button(action: {
                                 settingsManager.ipConfigs.append(IPConfig())
                             }) {
-                                Label("เพิ่ม IP แรก", systemImage: "plus.circle")
+                                Label("Add First IP", systemImage: "plus.circle")
                             }
                             .buttonStyle(.borderedProminent)
                         }
@@ -77,19 +77,19 @@ struct SettingsView: View {
                 
                 // Default Settings
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Default Ribbon (เมื่อ IP ไม่ตรงกับที่ตั้งค่า)")
+                    Text("Default Ribbon (When IP doesn't match)")
                         .font(.headline)
                     
-                    Text("เมื่อ IP ปัจจุบันไม่ตรงกับ IP ที่ตั้งค่าไว้ จะแสดง ribbon ตาม default settings")
+                    Text("Shows default ribbon when current IP doesn't match any configuration.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
                     // Default Ribbon Text Input
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("ข้อความบน Ribbon (Default):")
+                        Text("Ribbon Text (Default):")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        TextField("เช่น: DEFAULT, OTHER", text: $settingsManager.defaultRibbonText)
+                        TextField("e.g., DEFAULT, OTHER", text: $settingsManager.defaultRibbonText)
                             .textFieldStyle(.roundedBorder)
                             .font(.system(.body, design: .monospaced))
                             .padding(.horizontal, 12)
@@ -104,7 +104,7 @@ struct SettingsView: View {
                     
                     // Default Color Picker
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("สีของ Ribbon (Default):")
+                        Text("Ribbon Color (Default):")
                             .font(.subheadline)
                             .fontWeight(.medium)
                         HStack {
@@ -112,7 +112,7 @@ struct SettingsView: View {
                                 .labelsHidden()
                             Spacer()
                             // แสดงตัวอย่างสี
-                            Text(settingsManager.defaultRibbonText.isEmpty ? "ตัวอย่าง" : settingsManager.defaultRibbonText)
+                            Text(settingsManager.defaultRibbonText.isEmpty ? "Example" : settingsManager.defaultRibbonText)
                                 .font(.system(.body, design: .monospaced))
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
@@ -129,11 +129,11 @@ struct SettingsView: View {
                 
                 // สถานะ
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("สถานะ")
+                    Text("Status")
                         .font(.headline)
                     
                     HStack {
-                        Text("IP ปัจจุบัน (Public IP):")
+                        Text("Current Public IP:")
                             .font(.subheadline)
                         Spacer()
                         HStack(spacing: 8) {
@@ -151,7 +151,7 @@ struct SettingsView: View {
                                     .foregroundColor(.blue)
                             }
                             .buttonStyle(.plain)
-                            .help("คัดลอก IP")
+                            .help("Copy IP")
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -167,7 +167,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                            Text(isMatching ? "Ribbon กำลังแสดงอยู่ (IP ตรงกัน)" : "Ribbon กำลังแสดงอยู่ (Default)")
+                            Text(isMatching ? "Ribbon Active (IP Matched)" : "Ribbon Active (Default)")
                                 .foregroundColor(.green)
                             Spacer()
                             if !ribbonConfig.text.isEmpty {
@@ -185,7 +185,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.gray)
-                            Text("Ribbon ถูกซ่อนอยู่")
+                            Text("Ribbon Hidden")
                                 .foregroundColor(.gray)
                         }
                     }
@@ -212,7 +212,7 @@ struct IPConfigRowView: View {
                         .foregroundColor(.red)
                 }
                 .buttonStyle(.plain)
-                .help("ลบ IP นี้")
+                .help("Delete this IP")
                 
                 Spacer()
             }
@@ -222,7 +222,7 @@ struct IPConfigRowView: View {
                 Text("IP Address:")
                     .font(.subheadline)
                     .fontWeight(.medium)
-                TextField("เช่น: 123.45.67.89", text: $config.ip)
+                TextField("e.g., 123.45.67.89", text: $config.ip)
                     .textFieldStyle(.roundedBorder)
                     .font(.system(.body, design: .monospaced))
                     .padding(.horizontal, 12)
@@ -237,10 +237,10 @@ struct IPConfigRowView: View {
             
             // Ribbon Text Input
             VStack(alignment: .leading, spacing: 6) {
-                Text("ข้อความบน Ribbon:")
+                Text("Ribbon Text:")
                     .font(.subheadline)
                     .fontWeight(.medium)
-                TextField("เช่น: ENV, PROD, DEV", text: $config.ribbonText)
+                TextField("e.g., ENV, PROD, DEV", text: $config.ribbonText)
                     .textFieldStyle(.roundedBorder)
                     .font(.system(.body, design: .monospaced))
                     .padding(.horizontal, 12)
@@ -255,7 +255,7 @@ struct IPConfigRowView: View {
             
             // Color Picker
             VStack(alignment: .leading, spacing: 6) {
-                Text("สีของ Ribbon:")
+                Text("Ribbon Color:")
                     .font(.subheadline)
                     .fontWeight(.medium)
                 HStack {
@@ -263,7 +263,7 @@ struct IPConfigRowView: View {
                         .labelsHidden()
                     Spacer()
                     // แสดงตัวอย่างสี
-                    Text(config.ribbonText.isEmpty ? "ตัวอย่าง" : config.ribbonText)
+                    Text(config.ribbonText.isEmpty ? "Example" : config.ribbonText)
                         .font(.system(.body, design: .monospaced))
                         .fontWeight(.bold)
                         .foregroundColor(.white)
@@ -271,6 +271,44 @@ struct IPConfigRowView: View {
                         .padding(.vertical, 6)
                         .background(config.ribbonColor)
                         .cornerRadius(6)
+                }
+            }
+            
+            // Sound and Interval
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Sound Alert:")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                
+                HStack(spacing: 12) {
+                    Picker("", selection: $config.soundName) {
+                        ForEach(SoundManager.shared.availableSounds, id: \.self) { sound in
+                            Text(sound).tag(sound)
+                        }
+                    }
+                    .labelsHidden()
+                    .frame(width: 120)
+                    
+                    if config.soundName != "None" {
+                        Stepper(value: $config.soundInterval, in: 0...3600, step: 5) {
+                            if config.soundInterval == 0 {
+                                Text("Play Once")
+                                    .font(.caption)
+                            } else {
+                                Text("Every \(config.soundInterval) seconds")
+                                    .font(.caption)
+                            }
+                        }
+                        
+                        Button(action: {
+                            SoundManager.shared.playSound(config.soundName)
+                        }) {
+                            Image(systemName: "play.circle.fill")
+                                .foregroundColor(.blue)
+                        }
+                        .buttonStyle(.plain)
+                        .help("Test Sound")
+                    }
                 }
             }
         }

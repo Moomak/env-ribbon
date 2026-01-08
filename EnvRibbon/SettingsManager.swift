@@ -14,18 +14,26 @@ struct IPConfig: Identifiable, Equatable {
     var ip: String
     var ribbonText: String
     var ribbonColor: Color
+    var soundName: String
+    var soundInterval: Int // วินาที
     
     static func == (lhs: IPConfig, rhs: IPConfig) -> Bool {
-        return lhs.id == rhs.id && lhs.ip == rhs.ip && lhs.ribbonText == rhs.ribbonText
+        return lhs.id == rhs.id && 
+               lhs.ip == rhs.ip && 
+               lhs.ribbonText == rhs.ribbonText &&
+               lhs.soundName == rhs.soundName &&
+               lhs.soundInterval == rhs.soundInterval
     }
     
     // สำหรับเก็บสีในรูปแบบที่ Codable ได้
     private var colorData: Data?
     
-    init(ip: String = "", ribbonText: String = "ENV", ribbonColor: Color = .red) {
+    init(ip: String = "", ribbonText: String = "ENV", ribbonColor: Color = .red, soundName: String = "None", soundInterval: Int = 0) {
         self.ip = ip
         self.ribbonText = ribbonText
         self.ribbonColor = ribbonColor
+        self.soundName = soundName
+        self.soundInterval = soundInterval
         self.colorData = Self.encodeColor(ribbonColor)
     }
     
@@ -44,7 +52,7 @@ struct IPConfig: Identifiable, Equatable {
     
     // Codable support
     enum CodingKeys: String, CodingKey {
-        case id, ip, ribbonText, colorData
+        case id, ip, ribbonText, colorData, soundName, soundInterval
     }
 }
 
@@ -56,6 +64,10 @@ extension IPConfig: Codable {
         ribbonText = try container.decode(String.self, forKey: .ribbonText)
         colorData = try container.decodeIfPresent(Data.self, forKey: .colorData)
         ribbonColor = Self.decodeColor(from: colorData)
+        
+        // Handle migration for new fields
+        soundName = try container.decodeIfPresent(String.self, forKey: .soundName) ?? "None"
+        soundInterval = try container.decodeIfPresent(Int.self, forKey: .soundInterval) ?? 0
     }
     
     func encode(to encoder: Encoder) throws {
@@ -64,6 +76,8 @@ extension IPConfig: Codable {
         try container.encode(ip, forKey: .ip)
         try container.encode(ribbonText, forKey: .ribbonText)
         try container.encode(Self.encodeColor(ribbonColor), forKey: .colorData)
+        try container.encode(soundName, forKey: .soundName)
+        try container.encode(soundInterval, forKey: .soundInterval)
     }
 }
 
@@ -132,12 +146,12 @@ class SettingsManager: ObservableObject {
         return ipConfigs.first { $0.ip == ip && !$0.ip.isEmpty }
     }
     
-    func getRibbonConfig(for ip: String) -> (text: String, color: Color) {
+    func getRibbonConfig(for ip: String) -> (text: String, color: Color, soundName: String, soundInterval: Int) {
         if let matchingConfig = matchesIP(ip) {
-            return (matchingConfig.ribbonText, matchingConfig.ribbonColor)
+            return (matchingConfig.ribbonText, matchingConfig.ribbonColor, matchingConfig.soundName, matchingConfig.soundInterval)
         } else {
-            // ใช้ default settings
-            return (defaultRibbonText, defaultRibbonColor)
+            // ใช้ default settings (ยังไม่มี sound settings สำหรับ default)
+            return (defaultRibbonText, defaultRibbonColor, "None", 0)
         }
     }
     

@@ -64,6 +64,13 @@ class RibbonUpdateObserver: ObservableObject {
         } else {
             ribbonManager.hideRibbons()
         }
+        
+        // จัดการเสียง
+        if !config.soundName.isEmpty && config.soundName != "None" {
+            SoundManager.shared.startAlert(soundName: config.soundName, interval: config.soundInterval)
+        } else {
+            SoundManager.shared.stopAlert()
+        }
     }
 }
 

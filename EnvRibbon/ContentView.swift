@@ -17,7 +17,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 12) {
             // สถานะ IP
             VStack(alignment: .leading, spacing: 8) {
-                Text("IP ปัจจุบัน (Public):")
+                Text("Current Public IP:")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 HStack {
@@ -34,7 +34,7 @@ struct ContentView: View {
                             .foregroundColor(.blue)
                     }
                     .buttonStyle(.plain)
-                    .help("คัดลอก IP")
+                    .help("Copy IP")
                 }
             }
             .padding(.horizontal, 16)
@@ -52,7 +52,7 @@ struct ContentView: View {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
-                        Text(isMatching ? "แสดง Ribbon (IP ตรงกัน)" : "แสดง Ribbon (Default)")
+                        Text(isMatching ? "Ribbon Visible (IP Matched)" : "Ribbon Visible (Default)")
                             .font(.caption)
                     }
                     if !ribbonConfig.text.isEmpty {
@@ -72,7 +72,7 @@ struct ContentView: View {
                 HStack {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.gray)
-                    Text("ซ่อน Ribbon")
+                    Text("Ribbon Hidden")
                         .font(.caption)
                 }
                 .padding(.horizontal, 16)
@@ -85,7 +85,7 @@ struct ContentView: View {
             Button(action: {
                 openSettings?()
             }) {
-                Label("ตั้งค่า", systemImage: "gear")
+                Label("Settings", systemImage: "gear")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
@@ -95,7 +95,7 @@ struct ContentView: View {
             Button(action: {
                 NSApplication.shared.terminate(nil)
             }) {
-                Label("ออกจากแอป", systemImage: "power")
+                Label("Quit App", systemImage: "power")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
