@@ -100,6 +100,12 @@ class SettingsManager: ObservableObject {
         }
     }
     
+    @Published var ribbonScale: Double {
+        didSet {
+            UserDefaults.standard.set(ribbonScale, forKey: "ribbonScale")
+        }
+    }
+    
     // สำหรับ backward compatibility
     var targetIP: String {
         get {
@@ -211,6 +217,10 @@ class SettingsManager: ObservableObject {
         
         self.defaultRibbonText = defaultText
         self.defaultRibbonColor = defaultColor
+        
+        // Load ribbon scale
+        let savedScale = UserDefaults.standard.double(forKey: "ribbonScale")
+        self.ribbonScale = savedScale == 0 ? 1.0 : savedScale
         
         // โหลด IP configs
         self.ipConfigs = []

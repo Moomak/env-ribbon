@@ -46,12 +46,15 @@ class RibbonManager: ObservableObject {
     private var ribbonPositions: [UUID: CGPoint] = [:]
     private var ribbonIDsByScreen: [NSScreen: UUID] = [:]
     
-    func showRibbons(text: String, color: Color, width: CGFloat = 200, height: CGFloat = 40) {
+    func showRibbons(text: String, color: Color, width: CGFloat = 200, height: CGFloat = 40, scale: Double = 1.0) {
         hideRibbons()
+        
+        let scaledWidth = width * scale
+        let scaledHeight = height * scale
         
         let screens = NSScreen.screens
         for screen in screens {
-            let ribbonWindow = createRibbonWindow(for: screen, text: text, color: color, width: width, height: height)
+            let ribbonWindow = createRibbonWindow(for: screen, text: text, color: color, width: scaledWidth, height: scaledHeight, scale: scale)
             ribbonWindows.append(ribbonWindow)
             // ใช้ orderFront แทน makeKeyAndOrderFront เพราะ window นี้ไม่สามารถเป็น key window ได้
             ribbonWindow.orderFront(nil)
@@ -106,7 +109,7 @@ class RibbonManager: ObservableObject {
         }
     }
     
-    private func createRibbonWindow(for screen: NSScreen, text: String, color: Color, width: CGFloat, height: CGFloat) -> NSWindow {
+    private func createRibbonWindow(for screen: NSScreen, text: String, color: Color, width: CGFloat, height: CGFloat, scale: Double) -> NSWindow {
         let visibleFrame = screen.visibleFrame
         
         // ขนาดของ ribbon
@@ -166,7 +169,7 @@ class RibbonManager: ObservableObject {
         let ribbonID = UUID()
         
         // ใช้ custom window แทน
-        let hostingView = NSHostingView(rootView: DraggableRibbonView(text: text, color: color, ribbonWindow: customWindow, ribbonID: ribbonID, screen: screen, ribbonManager: self))
+        let hostingView = NSHostingView(rootView: DraggableRibbonView(text: text, color: color, scale: scale, ribbonWindow: customWindow, ribbonID: ribbonID, screen: screen, ribbonManager: self))
         hostingView.frame = customWindow.contentView!.bounds
         
         // ตั้งค่าเพื่อให้ rendering ชัดขึ้น
@@ -202,6 +205,7 @@ class RibbonManager: ObservableObject {
 struct DraggableRibbonView: NSViewRepresentable {
     let text: String
     let color: Color
+    let scale: Double
     let ribbonWindow: NSWindow
     let ribbonID: UUID
     let screen: NSScreen
@@ -214,7 +218,7 @@ struct DraggableRibbonView: NSViewRepresentable {
         containerView.screen = screen
         containerView.ribbonManager = ribbonManager
         
-        let hostingView = NSHostingView(rootView: RibbonView(text: text, color: color))
+        let hostingView = NSHostingView(rootView: RibbonView(text: text, color: color, scale: scale))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(hostingView)
         
@@ -369,17 +373,19 @@ class DraggableContainerView: NSView {
 struct RibbonView: View {
     let text: String
     let color: Color
+    let scale: Double
     
     var body: some View {
         HStack {
             Spacer()
+            // ใช้ scale เพื่อปรับขนาด text และ padding
             Text(text)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 14 * scale, weight: .bold))
                 .foregroundColor(.white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 16 * scale)
+                .padding(.vertical, 8 * scale)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
+                    RoundedRectangle(cornerRadius: 8 * scale)
                         .fill(color)
                 )
         }

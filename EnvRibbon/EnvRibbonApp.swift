@@ -50,6 +50,13 @@ class RibbonUpdateObserver: ObservableObject {
                 self?.checkAndUpdateRibbon()
             }
             .store(in: &cancellables)
+            
+        settingsManager.$ribbonScale
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.checkAndUpdateRibbon()
+            }
+            .store(in: &cancellables)
     }
     
     private func checkAndUpdateRibbon() {
@@ -59,7 +66,8 @@ class RibbonUpdateObserver: ObservableObject {
         if !config.text.isEmpty {
             ribbonManager.showRibbons(
                 text: config.text,
-                color: config.color
+                color: config.color,
+                scale: settingsManager.ribbonScale
             )
         } else {
             ribbonManager.hideRibbons()

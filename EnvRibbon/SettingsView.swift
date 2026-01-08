@@ -127,6 +127,29 @@ struct SettingsView: View {
                 .background(Color(NSColor.controlBackgroundColor))
                 .cornerRadius(12)
                 
+                // Ribbon Appearance
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Ribbon Appearance")
+                        .font(.headline)
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Size Scaling:")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Spacer()
+                            Text(String(format: "%.1fx", settingsManager.ribbonScale))
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Slider(value: $settingsManager.ribbonScale, in: 0.5...3.0, step: 0.1)
+                    }
+                }
+                .padding()
+                .background(Color(NSColor.controlBackgroundColor))
+                .cornerRadius(12)
+                
                 // สถานะ
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Status")
