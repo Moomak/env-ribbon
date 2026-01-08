@@ -1,36 +1,36 @@
 # EnvRibbon
 
-แอปพลิเคชัน macOS สำหรับแสดง ribbon ที่มุมขวาบนของจอเมื่อ IP address ตรงกับที่ตั้งค่าไว้
+A macOS application that displays a ribbon at the top right corner of the screen when the IP address matches the configuration.
 
-## คุณสมบัติ
+## Features
 
-- ✅ ตรวจสอบ IP address ปัจจุบันอัตโนมัติ
-- ✅ แสดง ribbon บนทุกจอ (multi-display support)
-- ✅ ตั้งค่า IP, สี, และข้อความได้
-- ✅ ทำงานเป็น menu bar app (ไม่แสดงใน Dock)
+- ✅ Automatically checks current public IP address
+- ✅ Shows ribbon on all displays (multi-display support)
+- ✅ Configurable IP, color, and text
+- ✅ Works as a menu bar app (not shown in Dock)
 
-## การติดตั้ง
+## Installation
 
-1. เปิดโปรเจกต์ใน Xcode
-2. เลือก target เป็น macOS
-3. Build และ Run (⌘R)
+1. Open project in Xcode
+2. Select target as macOS
+3. Build and Run (⌘R)
 
-## การใช้งาน
+## Usage
 
-1. เปิดแอปจาก menu bar (ไอคอน network)
-2. ไปที่ "ตั้งค่า" เพื่อกำหนด:
-   - IP ที่ต้องการตรวจสอบ
-   - ข้อความที่จะแสดงบน ribbon
-   - สีของ ribbon
-3. แอปจะตรวจสอบ IP อัตโนมัติทุก 5 วินาที
-4. เมื่อ IP ตรงกับที่ตั้งค่าไว้ ribbon จะแสดงที่มุมขวาบนของทุกจอ
+1. Open app from menu bar (network icon)
+2. Go to "Settings" to configure:
+   - Target IP to monitor
+   - Text to display on ribbon
+   - Color of the ribbon
+3. The app checks IP automatically every 5 seconds
+4. When IP matches the configuration, the ribbon will appear at the top right of every screen
 
-## ข้อกำหนด
+## Requirements
 
-- macOS 12.0 หรือสูงกว่า
-- Xcode 14.0 หรือสูงกว่า
+- macOS 12.0 or higher
+- Xcode 14.0 or higher
 
-## การตั้งค่า Git
+## Git Configuration
 
 ```bash
 git remote add origin https://github.com/Moomak/env-ribbon.git

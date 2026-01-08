@@ -1,38 +1,38 @@
-# คำแนะนำการ Build และ Distribute EnvRibbon
+# Build and Distribute Instructions for EnvRibbon
 
-## 📦 การ Build แอปสำหรับ Distribution
+## 📦 Building App for Distribution
 
-### วิธีที่ 1: ใช้ Xcode (แนะนำ)
+### Method 1: Using Xcode (Recommended)
 
-1. **เปิดโปรเจคใน Xcode**
+1. **Open Project in Xcode**
    ```bash
    open EnvRibbon.xcodeproj
    ```
 
-2. **เลือก Scheme และ Destination**
-   - เลือก Scheme: `EnvRibbon`
-   - เลือก Destination: `Any Mac (Apple Silicon, Intel)`
+2. **Select Scheme and Destination**
+   - Select Scheme: `EnvRibbon`
+   - Select Destination: `Any Mac (Apple Silicon, Intel)`
 
-3. **Build สำหรับ Release**
-   - ไปที่เมนู: `Product` > `Archive`
-   - รอให้ build เสร็จ
+3. **Build for Release**
+   - Go to menu: `Product` > `Archive`
+   - Wait for build to complete
 
 4. **Export App**
-   - หลังจาก Archive เสร็จ จะมีหน้าต่าง Organizer เปิดขึ้น
-   - คลิก `Distribute App`
-   - เลือก `Copy App` (สำหรับแจกจ่ายโดยตรง)
-   - เลือก destination folder
-   - คลิก `Export`
+   - After Archive is complete, Organizer window will open
+   - Click `Distribute App`
+   - Select `Copy App` (for direct distribution)
+   - Select destination folder
+   - Click `Export`
 
-5. **แอปจะถูกสร้างที่:**
-   - `~/Desktop/envRibbon/EnvRibbon/EnvRibbon.app` (หรือที่คุณเลือก)
+5. **App will be created at:**
+   - `~/Desktop/envRibbon/EnvRibbon/EnvRibbon.app` (or your selected location)
 
-## 🎨 การเปลี่ยน App Icon
+## 🎨 Changing App Icon
 
-### ขั้นตอนการเปลี่ยน Icon
+### Steps to Change Icon
 
-1. **เตรียมไฟล์ Icon**
-   - สร้างไฟล์ PNG สำหรับแต่ละขนาด:
+1. **Prepare Icon Files**
+   - Create PNG file for each size:
      - `icon_16x16.png` (16x16 pixels)
      - `icon_16x16@2x.png` (32x32 pixels)
      - `icon_32x32.png` (32x32 pixels)
@@ -44,21 +44,21 @@
      - `icon_512x512.png` (512x512 pixels)
      - `icon_512x512@2x.png` (1024x1024 pixels)
 
-2. **วิธีที่ 1: ใช้ Xcode**
-   - เปิด `Assets.xcassets` ใน Xcode
-   - เลือก `AppIcon`
-   - ลากไฟล์ icon ไปวางในช่องที่ตรงกับขนาด
+2. **Method 1: Using Xcode**
+   - Open `Assets.xcassets` in Xcode
+   - Select `AppIcon`
+   - Drag icon files to corresponding slots
 
-3. **วิธีที่ 2: ใช้ Script**
-   - วางไฟล์ icon ทั้งหมดไว้ในโฟลเดอร์ `icons/`
-   - รัน script: `./update_icons.sh`
+3. **Method 2: Using Script**
+   - Place all icon files in `icons/` folder
+   - Run script: `./update_icons.sh`
 
-### ใช้ Icon จากไฟล์เดียว
+### Use Icon from Single File
 
-ถ้ามีไฟล์ icon ขนาดใหญ่ (1024x1024) ไฟล์เดียว สามารถใช้ script นี้:
+If you have a single large icon file (1024x1024), you can use this script:
 
 ```bash
-# สร้าง icons จากไฟล์เดียว
+# Generate icons from single file
 sips -z 16 16 icon_1024.png --out icon_16x16.png
 sips -z 32 32 icon_1024.png --out icon_16x16@2x.png
 sips -z 32 32 icon_1024.png --out icon_32x32.png
@@ -71,42 +71,42 @@ sips -z 512 512 icon_1024.png --out icon_512x512.png
 sips -z 1024 1024 icon_1024.png --out icon_512x512@2x.png
 ```
 
-## 📝 การตั้งค่าเพิ่มเติม
+## 📝 Additional Settings
 
-### 1. เปลี่ยนชื่อแอป
-- ไปที่ `Info.plist` หรือ Build Settings
-- แก้ไข `PRODUCT_NAME` หรือ `CFBundleName`
+### 1. Change App Name
+- Go to `Info.plist` or Build Settings
+- Edit `PRODUCT_NAME` or `CFBundleName`
 
-### 2. เปลี่ยน Version
-- แก้ไข `MARKETING_VERSION` ใน Build Settings
-- หรือแก้ไข `CFBundleShortVersionString` ใน `Info.plist`
+### 2. Change Version
+- Edit `MARKETING_VERSION` in Build Settings
+- Or edit `CFBundleShortVersionString` in `Info.plist`
 
-### 3. เปลี่ยน Bundle Identifier
-- ไปที่ Build Settings
-- แก้ไข `PRODUCT_BUNDLE_IDENTIFIER`
+### 3. Change Bundle Identifier
+- Go to Build Settings
+- Edit `PRODUCT_BUNDLE_IDENTIFIER`
 
-## 🚀 การแจกจ่ายแอป
+## 🚀 Distributing App
 
-### สำหรับผู้ใช้ทั่วไป
+### For General Users
 
-1. **Zip แอป**
+1. **Zip App**
    ```bash
    cd build/export
    zip -r EnvRibbon.zip EnvRibbon.app
    ```
 
-2. **แจกจ่าย**
-   - อัปโหลดไปยังเว็บไซต์
-   - หรือส่งให้ผู้ใช้โดยตรง
+2. **Distribute**
+   - Upload to website
+   - Or send directly to users
 
-### สำหรับ App Store
+### For App Store
 
-1. ต้องมี Apple Developer Account
-2. ใช้ Xcode Organizer เพื่อ upload ไปยัง App Store Connect
-3. ตั้งค่าใน App Store Connect
+1. Must have Apple Developer Account
+2. Use Xcode Organizer to upload to App Store Connect
+3. Configure settings in App Store Connect
 
-## ⚠️ หมายเหตุ
+## ⚠️ Notes
 
-- แอปนี้ใช้ Sandbox และมี entitlements สำหรับ network access
-- ผู้ใช้อาจต้องอนุญาต network access เมื่อรันแอปครั้งแรก
-- สำหรับ auto start ต้องมีสิทธิ์ในการเพิ่ม login item
+- This app uses Sandbox and has entitlements for network access
+- Users may need to allow network access when running the app for the first time
+- For auto start, permission to add login item is required
