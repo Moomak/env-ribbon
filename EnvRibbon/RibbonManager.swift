@@ -46,19 +46,48 @@ class RibbonManager: ObservableObject {
     private var ribbonPositions: [UUID: CGPoint] = [:]
     private var ribbonIDsByScreen: [NSScreen: UUID] = [:]
     
-    func showRibbons(text: String, color: Color, width: CGFloat = 200, height: CGFloat = 40, scale: Double = 1.0) {
+    func showRibbons(text: String, color: Color, height: CGFloat = 40, scale: Double = 1.0) {
         hideRibbons()
         
-        let scaledWidth = width * scale
-        let scaledHeight = height * scale
+        // คำนวณขนาดที่ต้องการจริง
+        let calculatedSize = calculateSize(text: text, scale: scale)
+        let width = calculatedSize.width
+        
+        // ใช้ height ที่คำนวณได้ด้วยเพื่อให้ padding ถูกต้อง
+        // แต่ยังเคารพ height ขั้นต่ำที่ส่งมา
+        let scaledHeight = max(height * scale, calculatedSize.height)
         
         let screens = NSScreen.screens
         for screen in screens {
-            let ribbonWindow = createRibbonWindow(for: screen, text: text, color: color, width: scaledWidth, height: scaledHeight, scale: scale)
+            let ribbonWindow = createRibbonWindow(for: screen, text: text, color: color, width: width, height: scaledHeight, scale: scale)
             ribbonWindows.append(ribbonWindow)
             // ใช้ orderFront แทน makeKeyAndOrderFront เพราะ window นี้ไม่สามารถเป็น key window ได้
             ribbonWindow.orderFront(nil)
         }
+    }
+    
+    private func calculateSize(text: String, scale: Double) -> CGSize {
+        // Font settings must match RibbonView
+        let fontSize: CGFloat = 14 * scale
+        let font = NSFont.boldSystemFont(ofSize: fontSize)
+        
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font
+        ]
+        
+        let attributedString = NSAttributedString(string: text, attributes: attributes)
+        let textSize = attributedString.size()
+        
+        // Padding settings from RibbonView:
+        // .padding(.horizontal, 16 * scale) -> leading 16 + trailing 16 = 32
+        // .padding(.vertical, 8 * scale) -> top 8 + bottom 8 = 16
+        let horizontalPadding: CGFloat = 32 * scale
+        let verticalPadding: CGFloat = 16 * scale
+        
+        return CGSize(
+            width: ceil(textSize.width + horizontalPadding),
+            height: ceil(textSize.height + verticalPadding)
+        )
     }
     
     func hideRibbons() {
@@ -377,7 +406,7 @@ struct RibbonView: View {
     
     var body: some View {
         HStack {
-            Spacer()
+            // Spacer() // เอา Spacer ออกเพื่อให้ขนาดพอดีกับ content
             // ใช้ scale เพื่อปรับขนาด text และ padding
             Text(text)
                 .font(.system(size: 14 * scale, weight: .bold))
@@ -390,5 +419,6 @@ struct RibbonView: View {
                 )
         }
         .compositingGroup()
+        // .frame(maxWidth: .infinity, alignment: .trailing) // ไม่ต้อง force frame
     }
 }
