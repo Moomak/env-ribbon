@@ -267,10 +267,10 @@ struct DraggableRibbonView: NSViewRepresentable {
 }
 
 class DraggableContainerView: NSView {
-    var ribbonWindow: NSWindow?
+    weak var ribbonWindow: NSWindow?
     var ribbonID: UUID?
     var screen: NSScreen?
-    var ribbonManager: RibbonManager?
+    weak var ribbonManager: RibbonManager?
     private var isDragging = false
     private var dragStartScreenPoint: NSPoint = .zero
     private var windowStartOrigin: NSPoint = .zero
