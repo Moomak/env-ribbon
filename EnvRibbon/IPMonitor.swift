@@ -10,12 +10,13 @@ import Network
 import Combine
 import SystemConfiguration
 
+@MainActor
 class IPMonitor: ObservableObject {
     @Published var currentIP: String = "Checking..."
     @Published var isMonitoring: Bool = false
     
     private var timer: Timer?
-    private let monitorQueue = DispatchQueue(label: "IPMonitor")
+    // private let monitorQueue = DispatchQueue(label: "IPMonitor") // Removed as we use MainActor now
     private var currentTask: URLSessionDataTask?
     
     // รายการ API สำหรับดึง public IP (fallback)
@@ -42,7 +43,9 @@ class IPMonitor: ObservableObject {
         
         // ตั้ง Timer ไว้เป็น fallback (เช่น ทุก 60 วินาที) เผื่อกรณีอื่นๆ
         timer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { [weak self] _ in
-            self?.getIPAddress()
+            Task { @MainActor [weak self] in
+                self?.getIPAddress()
+            }
         }
     }
     
@@ -65,7 +68,7 @@ class IPMonitor: ObservableObject {
             if path.status == .satisfied {
                 // เมื่อ network เปลี่ยน (เช่น ต่อ VPN, เปลี่ยน WiFi) ให้เช็ค IP ใหม่ทันที
                 // เพิ่ม delay เล็กน้อยเพื่อให้ connection secure ดีก่อน (บางที VPN ต่อติดแต่ routing ยังไม่มา)
-                DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.getIPAddress()
                 }
             } else {
@@ -96,9 +99,7 @@ class IPMonitor: ObservableObject {
     private func tryNextAPI() {
         // ถ้าใช้ API ทั้งหมดแล้วยังไม่ได้ ให้แสดง error
         guard currentAPIIndex < ipAPIs.count else {
-            DispatchQueue.main.async {
-                self.currentIP = "Unable to check"
-            }
+            self.currentIP = "Unable to check"
             return
         }
         
@@ -117,54 +118,54 @@ class IPMonitor: ObservableObject {
         request.httpMethod = "GET"
         
         currentTask = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self else { return }
-            
-            // ตรวจสอบ error
-            if let error = error {
-                // ถ้าเป็น cancellation error ไม่ต้องทำอะไร
-                if (error as NSError).code == NSURLErrorCancelled {
-                    return
-                }
-                // ลอง API ถัดไป
-                self.tryNextAPI()
-                return
-            }
-            
-            // ตรวจสอบ HTTP status
-            if let httpResponse = response as? HTTPURLResponse {
-                guard (200...299).contains(httpResponse.statusCode) else {
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
+                
+                // ตรวจสอบ error
+                if let error = error {
+                    // ถ้าเป็น cancellation error ไม่ต้องทำอะไร
+                    if (error as NSError).code == NSURLErrorCancelled {
+                        return
+                    }
                     // ลอง API ถัดไป
                     self.tryNextAPI()
                     return
                 }
-            }
-            
-            guard let data = data else {
-                self.tryNextAPI()
-                return
-            }
-            
-            // พยายาม parse IP จาก response
-            var ip: String?
-            
-            // วิธีที่ 1: JSON format ({"ip": "xxx.xxx.xxx.xxx"})
-            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let jsonIP = json["ip"] as? String {
-                ip = jsonIP
-            }
-            // วิธีที่ 2: Plain text format (xxx.xxx.xxx.xxx)
-            else if let text = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
-                    isValidIP(text) {
-                ip = text
-            }
-            
-            if let ip = ip {
-                DispatchQueue.main.async {
-                    self.currentIP = ip
+                
+                // ตรวจสอบ HTTP status
+                if let httpResponse = response as? HTTPURLResponse {
+                    guard (200...299).contains(httpResponse.statusCode) else {
+                        // ลอง API ถัดไป
+                        self.tryNextAPI()
+                        return
+                    }
                 }
-            } else {
-                // ลอง API ถัดไป
-                self.tryNextAPI()
+                
+                guard let data = data else {
+                    self.tryNextAPI()
+                    return
+                }
+                
+                // พยายาม parse IP จาก response
+                var ip: String?
+                
+                // วิธีที่ 1: JSON format ({"ip": "xxx.xxx.xxx.xxx"})
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let jsonIP = json["ip"] as? String {
+                    ip = jsonIP
+                }
+                // วิธีที่ 2: Plain text format (xxx.xxx.xxx.xxx)
+                else if let text = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
+                        self.isValidIP(text) {
+                    ip = text
+                }
+                
+                if let ip = ip {
+                    self.currentIP = ip
+                } else {
+                    // ลอง API ถัดไป
+                    self.tryNextAPI()
+                }
             }
         }
         
